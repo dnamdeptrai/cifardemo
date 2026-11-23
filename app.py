@@ -87,8 +87,7 @@ def predict(image, model, class_names, top_k):
 st.set_page_config(page_title="CIFAR-10 ResNet-18", page_icon="🖼️")
 st.title("Nhận dạng ảnh CIFAR-10")
 st.write(
-    "Tải ảnh lên để xem các lớp dự đoán và xác suất. "
-    "Mô hình được nạp một lần và tái sử dụng cho các ảnh tiếp theo."
+    "Tải ảnh lên để xem các lớp dự đoán và xác suất. "    
 )
 
 try:
