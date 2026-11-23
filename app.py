@@ -3,13 +3,11 @@ from pathlib import Path
 import streamlit as st
 import torch
 import torch.nn as nn
-from huggingface_hub import hf_hub_download
 from PIL import Image
 from torchvision import models, transforms as T
 
 
-MODEL_REPO = "dnamdeptrai/cifar"
-CHECKPOINT_FILENAME = "cifar10-hf-space/best_cifar10_resnet18.pt"
+CHECKPOINT_PATH = Path(__file__).resolve().parent / "best_cifar10_resnet18.pt"
 CLASS_NAMES = [
     "airplane",
     "automobile",
@@ -35,15 +33,11 @@ TRANSFORM = T.Compose(
 
 @st.cache_resource
 def load_model():
-    checkpoint_path = Path(
-        hf_hub_download(
-            repo_id=MODEL_REPO,
-            filename=CHECKPOINT_FILENAME,
-            repo_type="model",
-        )
-    )
+    if not CHECKPOINT_PATH.is_file():
+        raise FileNotFoundError(f"Không tìm thấy checkpoint: {CHECKPOINT_PATH}")
+
     checkpoint = torch.load(
-        checkpoint_path, map_location="cpu", weights_only=True
+        CHECKPOINT_PATH, map_location="cpu", weights_only=True
     )
     if not isinstance(checkpoint, dict):
         raise TypeError("Checkpoint phải chứa state dictionary.")
@@ -95,10 +89,7 @@ try:
         model, class_names = load_model()
 except Exception as error:
     st.error(f"Không thể nạp mô hình: {error}")
-    st.info(
-        "Kiểm tra repository Hugging Face có công khai và checkpoint nằm tại "
-        f"`{CHECKPOINT_FILENAME}`."
-    )
+    st.info("Đảm bảo `best_cifar10_resnet18.pt` được đặt cạnh `app.py` trong GitHub repo.")
     st.stop()
 
 uploaded_file = st.file_uploader(
